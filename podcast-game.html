@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biggest Problem in the Universe - Podcast Simulator</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #222;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        
+        #gameContainer {
+            width: 800px;
+            height: 600px;
+            background-color: #111;
+            border: 4px solid #444;
+            border-radius: 8px;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+        
+        #studioBackground {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, #222 60%, #333 100%);
+            z-index: 1;
+        }
+        
+        #recordingLight {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 20px;
+            height: 20px;
+            background-color: #f00;
+            border-radius: 50%;
+            z-index: 5;
+            box-shadow: 0 0 10px #f00;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0.5; }
+        }
+        
+        #podcastTitle {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #ff9900;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            z-index: 5;
+        }
+        
+        #timer {
+            position: absolute;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 36px;
+            font-weight: bold;
+            color: #fff;
+            background-color: #333;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: 2px solid #555;
+            z-index: 5;
+        }
+        
+        .host {
+            position: absolute;
+            bottom: 200px;
+            width: 100px;
+            height: 150px;
+            z-index: 3;
+            image-rendering: pixelated;
+        }
+        
+        #host1 {
+            left: 150px;
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAEjElEQVR4Xu2dT2hcRRzHv7+ZTYyx2YI5CBZEkVZE8CK0oIgHD5VizUFRpLnVg4IXwYuCeBT1JII51IMXpQdTT1LwIIonD1I8iGIREaSHViMbm93N/GTe7KYhu+/NzO+9eW9m3/v9Lrvz+/3m+5nffN/MvJ1dQP5yI4Dc1Emq5M44mUVgbgGYWUFgdSJMYxXWblgTrMMafcfcuNmk/Kc4XdIGkOLUHOy+c0jDOQTmHGxyFtaeiJ50IGqtOQBgE4bfmxt3NnBv9CPC4SbyT0WUIJ2lY7DmXVh7CcaeiXqqgS0MLmAwuWo2f91Kvt7FCNIfOYfQvIdgcDFacL83Mn9gNPrQbP3+Z1r5UgHSXTyNML2CwPjzY1q+4JKNEUYfmc2/7iaRIVEg/ZfOoDN4H4F5KomB7O0XfI6bt9+Y4Mvfo2ZKDIS46Cy9gzS9CjCeRw3L32ahRYBrZuP6+z6Tc54H9EdWEJgPIGCOjSEa7cDgTbPx64/HOeHYQDrzCwjMsn8M7UMYnmdurc93Oh4LSGfxPNL0Y/9VcazPQwjtFXPrzx+OOuVIIN2FcwjTTwHss/DuPxUMwTdLJuxzK+CbOZSp/RQmfQUAj9RVaXHxMLxmbvzxU1G6wiPSnj+DJL1eVwnF85r0olkf/pQHU3hEEIQvgcKd4GQYPI3/Nh8UhUAQhC+B0k8oPwvLFQbBKkHfMevDn/NKzAXSnp9Hkl73jSXneicYXDTrwxu5QPpLFHlyYbKJW+4kDS+ZW7fPHwDSX6DIiZefWXtcjdJf4lZJe/4ckvQfgpzXJicYnDPrw58OAunML6GTfFtX3ep63iBdNus/XxmPSGv+JJL0n7rKVdvzVvq42frr133QLZ+G2ccH/uUpygkm6SVz69eP9oB0F08hTG9H+UsuMhA/mdxI9oAgyGNE0ovZEemPrCAIiFe8AQn2gATHQ0BSIclNQ/WvIQGCdDxAepEhQHa9QMcjigyRg3q/lBAZIgf1fkXj3hiQg/psBFQulREZIgf1kSECRGRIgQxJDuqjywpdbiBAxEOkLZZdljRGZYeVHVZkSFkZtdSI7LAiQ0SGyIwh07vMGDJjyIwhM4ZvE6/aR2XGkBlDZgzfx5nKPnIYJA0QASJ99iEgVfsAoXIFoGgfIJTvWKv2AVK1T1Cq9gFC5VYzqn2AUO0ThKp9gFC55ZhqHyCU+wShah8gVPs8ofSXTqMz+EG1DxDKfR5QRfsAoX7DsGofINR7vKBa7QOEeo8nVKt9gFDvOQKqXT5AqPd4QLXaBwj1niOg2uUDhHpPAVTLPEBo9xyBarMPENrdR6Da7AOEdvdRqDb5AKHdfRyqTb6MWMu33aJZi0fL7GtJdN+lrMWPBSlDzHos0nXUW4aY9USM63hfGWLWk4MOEPoB74Tq7AMkZBDrJUPMehTcdbvvDDHr4wmuG7pmiFmPiLiuP44hyJAh1uNKrjvOYwj7tGSIWY+suY49rgzp02fIrMcgXR3Glz9Uh5Z9tMysB2+dFn+nHPppydNh1uPJzms+wuQFOgSy9o1ZD4N7LSxdTMz6v6Kc/1pMNdSdAAAAAElFTkSuQmCC');
+            background-repeat: no-repeat;
+            background-size: contain;
+        }
+        
+        #host2 {
+            right: 150px;
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAEdklEQVR4Xu2dS2hcVRjH//9zJ6mNTRYWF4JQpLUiuGkpKCK4cFEp1iyKIs1dXSi4KXRTcOlKfCSCi+rGTaWLpitRXBTFlQtRXIhiERGkizZtJpOZe8//mHunQ5p5nXPm3Ace55y7PJz7+32P7/vOuXeGoOWRBOCROkkY9+bRzAONehjdYMJwpZikQzD2gDHhA/VvTI2vtfO/pbk1kORkA805oHYZYOcEdg4W54G5FfQpAOmfawwO4TZobgMm3aLa2GPUJu4QlYMk5yLQiV5BMH8BiHwM6hwWaK0Htp/QtdvLlM3XGJUjyTiAjnM2zVlVgRwJ6vW3dOP6ZppBkwLpLr9E0fBd7wZMo9xjfWzBwZfU2L2a5A5JALm3+BRF/ROAGUlSmL/HWnATnHtVt3Y+8F27NxBiYuXiGQoGnwLM83H79O3nAfKZbm9/5rMmbyDJS0/QoP6Z9wK8v3PuU21sf+ArhjcQImJl+RKF9a8BTHnXVEWAdB8TxR+qpVvFdFvCjAPphrdQ1L8DMP1Mqyk+gLK/aKJ+XreuVbYbxm2cO8tPURh85y3Bju8cdYvSujx0W269iVtv4hYDu8tPUuQ+x5h/CjxeqaTfYOl1beyOPWYeCeTvxSMUdHcB5qn/l3asjE75nC7urI9Tw9hADhYex6j7A8Dsn8JwzNLhLl3c/XtcDWMBuTexRwDMqSwfpT96Vxff+juvhJFAquuL8BRCvzDKIPm+8bOCCUjxBHLm3BN0EM4mH0m+C3R3sNZdUF0o/KCbVz8aBaTdvo8G+aUMoqNDWOOAcE6bu9ePdiKdpcdoFOxQEOyXiUAWa/XsIcAB3drtVtcQolYre5woWFLdbJpIVe/8sFYlQoCIqnOylAgR7QOkhYhiULTvA0RS7QNEtA8Q0T5ARPsAEe0DRLQPENFeC4qifYCI9gEi2geIaB8gon2AiPZaU0T7ABHtA0S0DxDRPkBE+wBpTc7a2irahU0R7QNEtA8Q0T5ARPsAEe3jDSTVNRC0DxDRPkBE+wAR7QNEtE9oFaVXu7QLewDJiloV0b7fQKzaB0jQB4ionRZE+wAR7bqiaB8gon2AiPYBItoHiGgfIKJ9gIj2ASLaB4hoHyCifYCI9vrFiPYBItoHiGgfIKJ9gIj2GhLRPkAGfYCI9gEi2geIaK91RbQPkKB10ShaA0S01yNEtA8Q0T5ARPsAEe0DRLQPENFeq6JoHyCifYCI9gEi2geIaK/nzYj2ASLaB4hoHyCivZ45I9oHiGgfIKJ9gHxEcb9K1a68W72VxEGt/qfkYpBe/eRu9YapLXWv/rg4f6E3Z64HGLPfO7fa42B40/tV6hPZbw40oZZu/TnxvWbfIbebDxOFP8XGiDxAPtTGzruxgex3XqSo/3Vs8P/zAdI7urj73ihljDxD7s2vURLdpNA83guhqzl2Csa9oxv7n99ZxVgg9xYeozT4ovJHTn7h8X1d2t8Zt8yxgPTn7gm1F5epU/uI8tOXGj/q0v7HccsZG0i/uM7wfoq6LWp0zlGavlYJgH5h9z8JvJ+Vao8y6wAAAABJRU5ErkJggg==');
+            background-repeat: no-repeat;
+            background-size: contain;
+        }
+        
+        .speech-bubble {
+            position: absolute;
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 15px;
+            max-width: 200px;
+            min-height: 50px;
+            font-size: 14px;
+            color: #000;
+            bottom: 330px;
+            z-index: 4;
+            opacity: 0;
+            transition: opacity 0.3s;
+            word-wrap: break-word;
+        }
+        
+        .shake {
+            animation: shake 0.5s;
+        }
+        
+        @keyframes shake {
+            0% { transform: translateX(-50%) translateX(0); }
+            20% { transform: translateX(-50%) translateX(-10px); }
+            40% { transform: translateX(-50%) translateX(10px); }
+            60% { transform: translateX(-50%) translateX(-10px); }
+            80% { transform: translateX(-50%) translateX(10px); }
+            100% { transform: translateX(-50%) translateX(0); }
+        }
+        
+        .speech-bubble:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            width: 0;
+            height: 0;
+            border: 10px solid transparent;
+            border-top-color: #fff;
+            border-bottom: 0;
+            margin-left: -10px;
+        }
+        
+        #speech1 {
+            left: 130px;
+        }
+        
+        #speech1:after {
+            left: 50%;
+        }
+        
+        #speech2 {
+            right: 130px;
+        }
+        
+        #speech2:after {
+            right: 50%;
+            transform: translateX(10px);
+        }
+        
+        #inputArea {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70%;
+            z-index: 5;
+        }
+        
+        #problemInput {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            border: 2px solid #444;
+            border-radius: 8px;
+            background-color: #222;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+        }
+        
+        #problemInput:focus {
+            outline: none;
+            border-color: #ff9900;
+            box-shadow: 0 0 10px rgba(255, 153, 0, 0.5);
+        }
+        
+        #previousProblems {
+            position: absolute;
+            bottom: 130px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            max-height: 100px;
+            overflow-y: auto;
+            color: #aaa;
+            font-size: 14px;
+            text-align: center;
+            z-index: 4;
+        }
+        
+        #previousProblems::-webkit-scrollbar {
+            width: 5px;
+        }
+        
+        #previousProblems::-webkit-scrollbar-track {
+            background: #222;
+        }
+        
+        #previousProblems::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 5px;
+        }
+        
+        #scoreDisplay {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            font-size: 18px;
+            color: #ff9900;
+            z-index: 5;
+        }
+        
+        #gameOverScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            display: none;
+        }
+        
+        #gameOverTitle {
+            font-size: 36px;
+            color: #ff9900;
+            margin-bottom: 20px;
+        }
+        
+        #finalScore {
+            font-size: 24px;
+            color: #fff;
+            margin-bottom: 30px;
+        }
+        
+        #restartButton {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #ff9900;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        #restartButton:hover {
+            background-color: #ffb340;
+        }
+        
+        #microphone {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120px;
+            height: 120px;
+            background-image: url('data:image/png;base64,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');
+            background-repeat: no-repeat;
+            background-size: contain;
+            z-index: 2;
+        }
+        
+        #startScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 15;
+        }
+        
+        #startTitle {
+            font-size: 32px;
+            color: #ff9900;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        #instructions {
+            font-size: 16px;
+            color: #fff;
+            margin-bottom: 30px;
+            max-width: 80%;
+            text-align: center;
+            line-height: 1.5;
+        }
+        
+        #startButton {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #ff9900;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        #startButton:hover {
+            background-color: #ffb340;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <div id="studioBackground"></div>
+        <div id="microphone"></div>
+        <div id="recordingLight"></div>
+        
+        <div id="podcastTitle">Biggest Problem in the Universe</div>
+        <div id="timer">30</div>
+        
+        <div id="host1" class="host"></div>
+        <div id="host2" class="host"></div>
+        
+        <div id="speech1" class="speech-bubble"></div>
+        <div id="speech2" class="speech-bubble"></div>
+        
+        <div id="previousProblems"></div>
+        
+        <div id="inputArea">
+            <input type="text" id="problemInput" placeholder="Type a problem and press Enter..." autocomplete="off">
+        </div>
+        
+        <div id="scoreDisplay">Score: 0</div>
+        
+        <div id="gameOverScreen">
+            <div id="gameOverTitle">Podcast Cancelled!</div>
+            <div id="finalScore">Your final score: 0</div>
+            <button id="restartButton">Try Again</button>
+        </div>
+        
+        <div id="startScreen">
+            <div id="startTitle">Biggest Problem in the Universe</div>
+            <div id="instructions">
+                You are hosting a podcast where you must constantly present new problems to discuss. 
+                <br><br>
+                Type a problem and press Enter before the timer runs out. 
+                <br><br>
+                Each successful problem earns you points, but be quick and creative!
+            </div>
+            <button id="startButton">Start Podcast</button>
+        </div>
+    </div>
+    
+    <script>
+        // Game variables
+        let timer = 30;
+        let score = 0;
+        let gameActive = false;
+        let problems = [];
+        let currentHost = 1; // 1 for left host, 2 for right host
+        let countdownInterval;
+        let difficulty = 1; // Increases as game progresses
+        
+        // Game elements
+        const timerDisplay = document.getElementById('timer');
+        const problemInput = document.getElementById('problemInput');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const previousProblems = document.getElementById('previousProblems');
+        const speech1 = document.getElementById('speech1');
+        const speech2 = document.getElementById('speech2');
+        const gameOverScreen = document.getElementById('gameOverScreen');
+        const finalScore = document.getElementById('finalScore');
+        const restartButton = document.getElementById('restartButton');
+        const startScreen = document.getElementById('startScreen');
+        const startButton = document.getElementById('startButton');
+        
+        // Common problems to prevent duplicates
+        const commonProblems = [
+            "traffic", "taxes", "politics", "weather", "covid", "inflation",
+            "social media", "climate change", "war", "pollution", "healthcare",
+            "education", "crime", "poverty", "unemployment", "housing"
+        ];
+        
+        // Initialize the game
+        function initGame() {
+            timer = 30;
+            score = 0;
+            problems = [];
+            currentHost = 1;
+            gameActive = true;
+            difficulty = 1;
+            
+            timerDisplay.textContent = timer;
+            scoreDisplay.textContent = "Score: 0";
+            previousProblems.innerHTML = "";
+            speech1.style.opacity = 0;
+            speech2.style.opacity = 0;
+            gameOverScreen.style.display = "none";
+            
+            problemInput.value = "";
+            problemInput.focus();
+            
+            // Clear any existing countdown and start a new one
+            clearInterval(countdownInterval);
+            startCountdown();
+        }
+        
+        // End the game
+        function endGame() {
+            clearInterval(countdownInterval);
+            gameActive = false;
+            
+            finalScore.textContent = `Your final score: ${score}`;
+            gameOverScreen.style.display = "flex";
+        }
+        
+        // Add a problem to the game
+        function addProblem(problem) {
+            // Check if problem is too short
+            if (problem.length < 3) {
+                return false;
+            }
+            
+            // Check if problem was already mentioned
+            const lowerProblem = problem.toLowerCase();
+            if (problems.some(p => p.toLowerCase() === lowerProblem)) {
+                return false;
+            }
+            
+            // Check if it's too similar to a common problem
+            for (const commonProblem of commonProblems) {
+                if (lowerProblem.includes(commonProblem)) {
+                    // If we already have a problem containing this common problem
+                    if (problems.some(p => p.toLowerCase().includes(commonProblem))) {
+                        return false;
+                    }
+                }
+            }
+            
+            // Add the problem
+            problems.push(problem);
+            
+            // Update score
+            score += Math.max(5, Math.floor(10 * difficulty));
+            scoreDisplay.textContent = `Score: ${score}`;
+            
+            // Add to previous problems list
+            const problemElement = document.createElement('div');
+            problemElement.textContent = problem;
+            previousProblems.appendChild(problemElement);
+            
+            // Auto-scroll to bottom
+            previousProblems.scrollTop = previousProblems.scrollHeight;
+            
+            // Display in speech bubble
+            displaySpeech(problem);
+            
+            // Reset timer with a small bonus based on score
+            timer = Math.max(5, 30 - Math.floor(difficulty * 2));
+            timerDisplay.textContent = timer;
+            timerDisplay.style.color = "#fff";
+            
+            // Increase difficulty
+            difficulty += 0.1;
+            
+            return true;
+        }
+        
+        // Display speech in the appropriate bubble
+        function displaySpeech(text) {
+            const speech = currentHost === 1 ? speech1 : speech2;
+            const otherSpeech = currentHost === 1 ? speech2 : speech1;
+            
+            // Hide other speech bubble
+            otherSpeech.style.opacity = 0;
+            
+            // Set text and show speech bubble
+            speech.textContent = text;
+            speech.style.opacity = 1;
+            
+            // Switch hosts for next problem
+            currentHost = currentHost === 1 ? 2 : 1;
+        }
+        
+        // Start the timer countdown
+        function startCountdown() {
+            // Ensure we're not creating multiple intervals
+            clearInterval(countdownInterval);
+            
+            countdownInterval = setInterval(() => {
+                timer--;
+                timerDisplay.textContent = timer;
+                
+                // Change timer color as time decreases
+                if (timer <= 10) {
+                    timerDisplay.style.color = "#ff9900";
+                }
+                if (timer <= 5) {
+                    timerDisplay.style.color = "#ff0000";
+                }
+                
+                // Game over if timer reaches 0
+                if (timer <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
+        
+        // Event listeners
+        problemInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && gameActive) {
+                const problem = problemInput.value.trim();
+                if (problem && addProblem(problem)) {
+                    problemInput.value = '';
+                } else {
+                    // Shake input to indicate invalid entry
+                    problemInput.classList.add('shake');
+                    setTimeout(() => {
+                        problemInput.classList.remove('shake');
+                    }, 500);
+                }
+            }
+        });
+        
+        restartButton.addEventListener('click', initGame);
+        
+        // Fix for start button functionality
+        startButton.addEventListener('click', function() {
+            console.log("Start button clicked");
+            startScreen.style.display = 'none';
+            initGame();
+        });
+        
+        // Initialize event listeners when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("DOM loaded");
+            
+            // Re-attach start button event listener to ensure it works
+            document.getElementById('startButton').addEventListener('click', function() {
+                console.log("Start button clicked (from DOMContentLoaded)");
+                document.getElementById('startScreen').style.display = 'none';
+                initGame();
+            });
+        });
+    </script>
+</body>
