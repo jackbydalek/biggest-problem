@@ -65,7 +65,7 @@
             font-size: 28px;
             font-weight: bold;
             text-transform: uppercase;
-            color: #ff9900;
+            color: #fdd200;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
             z-index: 5;
         }
@@ -188,7 +188,7 @@
         
         #problemInput:focus {
             outline: none;
-            border-color: #ff9900;
+            border-color: #fdd200;
             box-shadow: 0 0 10px rgba(255, 153, 0, 0.5);
         }
         
@@ -224,7 +224,7 @@
             bottom: 20px;
             left: 20px;
             font-size: 18px;
-            color: #ff9900;
+            color: #fdd200;
             z-index: 5;
         }
         
@@ -245,7 +245,7 @@
         
         #gameOverTitle {
             font-size: 36px;
-            color: #ff9900;
+            color: #fdd200;
             margin-bottom: 20px;
         }
         
@@ -258,7 +258,7 @@
         #restartButton {
             padding: 10px 20px;
             font-size: 18px;
-            background-color: #ff9900;
+            background-color: #fdd200;
             color: #000;
             border: none;
             border-radius: 5px;
@@ -267,7 +267,7 @@
         }
         
         #restartButton:hover {
-            background-color: #ffb340;
+            background-color: #fdd200;
         }
         
         #microphone {
@@ -299,7 +299,7 @@
         
         #startTitle {
             font-size: 32px;
-            color: #ff9900;
+            color: #fdd200;
             margin-bottom: 20px;
             text-align: center;
         }
@@ -316,7 +316,7 @@
         #startButton {
             padding: 10px 20px;
             font-size: 18px;
-            background-color: #ff9900;
+            background-color: #fdd200;
             color: #000;
             border: none;
             border-radius: 5px;
@@ -325,7 +325,7 @@
         }
         
         #startButton:hover {
-            background-color: #ffb340;
+            background-color: #ffd200;
         }
     </style>
 </head>
@@ -336,7 +336,7 @@
         <div id="recordingLight"></div>
         
         <div id="podcastTitle">Biggest Problem in the Universe</div>
-        <div id="timer">10</div>
+        <div id="timer">12</div>
         
         <div id="host1" class="host"></div>
         <div id="host2" class="host"></div>
@@ -373,7 +373,7 @@
     
     <script>
         // Game variables
-        let timer = 10;
+        let timer = 12;
         let score = 0;
         let gameActive = false;
         let problems = [];
@@ -403,7 +403,7 @@
         
         // Initialize the game
         function initGame() {
-            timer = 10;
+            timer = 12;
             score = 0;
             problems = [];
             currentHost = 1;
@@ -437,7 +437,7 @@
         // Add a problem to the game
         function addProblem(problem) {
             // Check if problem is too short
-            if (problem.length < 3) {
+            if (problem.length < 10) {
                 return false;
             }
             
@@ -476,7 +476,7 @@
             displaySpeech(problem);
             
             // Reset timer with a small bonus based on score
-            timer = Math.max(5, 10 - Math.floor(difficulty * 2));
+            timer = Math.max(5, 12 - Math.floor(difficulty * 2));
             timerDisplay.textContent = timer;
             timerDisplay.style.color = "#fff";
             
@@ -513,7 +513,7 @@
                 
                 // Change timer color as time decreases
                 if (timer <= 10) {
-                    timerDisplay.style.color = "#ff9900";
+                    timerDisplay.style.color = "#ffd200";
                 }
                 if (timer <= 5) {
                     timerDisplay.style.color = "#ff0000";
