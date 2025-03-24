@@ -336,7 +336,7 @@
         <div id="recordingLight"></div>
         
         <div id="podcastTitle">Biggest Problem in the Universe</div>
-        <div id="timer">30</div>
+        <div id="timer">10</div>
         
         <div id="host1" class="host"></div>
         <div id="host2" class="host"></div>
@@ -373,7 +373,7 @@
     
     <script>
         // Game variables
-        let timer = 30;
+        let timer = 10;
         let score = 0;
         let gameActive = false;
         let problems = [];
@@ -476,7 +476,7 @@
             displaySpeech(problem);
             
             // Reset timer with a small bonus based on score
-            timer = Math.max(5, 30 - Math.floor(difficulty * 2));
+            timer = Math.max(5, 10 - Math.floor(difficulty * 2));
             timerDisplay.textContent = timer;
             timerDisplay.style.color = "#fff";
             
