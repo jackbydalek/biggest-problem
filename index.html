@@ -434,7 +434,7 @@
             gameOverScreen.style.display = "flex";
         }
         
-        // Add a problem to the game
+        // Find the addProblem function and modify the timer reset logic
         function addProblem(problem) {
             // Check if problem is too short
             if (problem.length < 10) {
@@ -475,10 +475,18 @@
             // Display in speech bubble
             displaySpeech(problem);
             
-            // Reset timer with a small bonus based on score
-            timer = Math.max(5, 12 - Math.floor(difficulty * 2));
+            // Add 3 seconds to the timer instead of resetting it
+            timer += 3;
             timerDisplay.textContent = timer;
-            timerDisplay.style.color = "#fff";
+            
+            // Reset timer color based on new time
+            if (timer > 10) {
+                timerDisplay.style.color = "#fff";
+            } else if (timer > 5) {
+                timerDisplay.style.color = "#ffd200";
+            } else {
+                timerDisplay.style.color = "#ff0000";
+            }
             
             // Increase difficulty
             difficulty += 0.1;
